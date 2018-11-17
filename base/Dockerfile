@@ -30,7 +30,7 @@ RUN wget https://root.cern.ch/download/root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.
     export ROOTSYS=/usr/local/root && \
     export PATH=${ROOTSYS}/bin:${PATH} && \
     export LD_LIBRARY_PATH=${ROOTSYS}/lib:${LD_LIBRARY_PATH} && \
-    export PYTHONPATH=${ROOTSYS}/lib:${PYTHONPATH} && \
+    export PYTHONPATH=${ROOTSYS}/lib:${PYTHONPATH}
 
 # pip basics
 RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip==9.0.3 && \

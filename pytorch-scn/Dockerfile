@@ -2,7 +2,7 @@ FROM deeplearnphysics/larcv2-docker:cuda9.0-cudnn7-ub16.04-root6.14.04
 
 MAINTAINER kterao@slac.stanford.edu
 
-RUN  pip --disable-pip-version-check install torch_nightly==1.0.0.dev20181015 -f https://download.pytorch.org/whl/nightly/cu90/torch_nightly.html
+RUN  pip --no-cache-dir --disable-pip-version-check install torch_nightly==1.0.0.dev20181015 -f https://download.pytorch.org/whl/nightly/cu90/torch_nightly.html
 
 RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH && \

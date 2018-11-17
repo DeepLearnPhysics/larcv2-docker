@@ -1,0 +1,28 @@
+FROM ubuntu:16.04
+
+MAINTAINER kterao@slac.stanford.edu
+
+ENV ROOTSYS=/usr/local/root
+ENV PATH="${ROOTSYS}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
+
+# set bin and lib path
+ENV PATH=${LARCV_BASEDIR}/bin:${LARCV_BINDIR}:${PATH}
+ENV LD_LIBRARY_PATH=${LARCV_LIBDIR}:${LD_LIBRARY_PATH}:
+ENV PYTHONPATH=${LARCV_BASEDIR}/python:${PYTHONPATH}
+
+RUN apt-get -y update
+RUN apt-get -y install dpkg-dev g++ gcc binutils git python-dev python-tk python-pip python-setuptools wget
+
+# ROOT
+RUN wget https://root.cern.ch/download/root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+    tar -xzf root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+    rm root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+    mv root /usr/local/root
+
+# pip basics
+RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip==9.0.3 && \
+    pip --no-cache-dir --disable-pip-version-check install --upgrade setuptools && \
+    pip --no-cache-dir --disable-pip-version-check install numpy 
+

@@ -1,4 +1,4 @@
-FROM deeplearnphysics/base:latest
+FROM deeplearnphysics/ml:pytorch-0.4.1
 
 MAINTAINER kterao@slac.stanford.edu
 

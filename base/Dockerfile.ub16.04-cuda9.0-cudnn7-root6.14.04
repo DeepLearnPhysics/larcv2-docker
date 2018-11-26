@@ -5,7 +5,7 @@ MAINTAINER kterao@slac.stanford.edu
 ENV CUDA_DEVICE_ORDER=PCI_BUS_ID
 ENV ROOTSYS=/usr/local/root
 ENV PATH="${ROOTSYS}/bin:${PATH}"
-ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
 ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
 
 RUN apt-get -y update
@@ -41,7 +41,5 @@ RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip==9.0.3 
     pip --no-cache-dir --disable-pip-version-check install pandas scikit-image scikit-learn Pillow opencv-python && \
     pip --no-cache-dir --disable-pip-version-check install jupyter notebook
 
-RUN mkdir /app && cd /app && \
-    git clone https://DeepLearnPhysics/larcv2 && cd larcv2 && \
-    source configure.sh && make -j
+
 

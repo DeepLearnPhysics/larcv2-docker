@@ -1,4 +1,4 @@
-FROM deeplearnphysics/base:ub16.04-cuda9.0-cudnn7-root6.14.04
+FROM deeplearnphysics/base:latest
 
 MAINTAINER kterao@slac.stanford.edu
 

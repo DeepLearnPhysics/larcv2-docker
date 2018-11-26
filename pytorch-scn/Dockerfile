@@ -14,5 +14,5 @@ RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/lib
     git clone https://github.com/facebookresearch/SparseConvNet && \
     cd SparseConvNet && \
     rm -rf build/ dist/ sparseconvnet.egg-info && \
-    python setup.py instal
+    python setup.py install
 

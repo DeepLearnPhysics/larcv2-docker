@@ -11,8 +11,9 @@ RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/lib
     export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH && \
     mkdir -p /app && \
     cd /app && \
-    git clone https://github.com/facebookresearch/SparseConvNet && \
+    git clone https://github.com/DeepLearnPhysics/SparseConvNet && \
     cd SparseConvNet && \
+    git checkout pytorch_dev10152018 && \
     rm -rf build/ dist/ sparseconvnet.egg-info && \
     python setup.py install
 

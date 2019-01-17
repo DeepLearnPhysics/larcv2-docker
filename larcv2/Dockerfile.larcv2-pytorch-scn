@@ -35,6 +35,7 @@ RUN mkdir -p /app && \
     cd /app && \
     git clone https://github.com/DeepLearnPhysics/larcv2 && \
     cd larcv2 && \
+    git checkout v1.0.0_rc01 && \
     mkdir -p $LARCV_BUILDDIR && \
     mkdir -p $LARCV_LIBDIR && \
     mkdir -p $LARCV_BINDIR && \

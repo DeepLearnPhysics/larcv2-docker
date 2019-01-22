@@ -40,7 +40,8 @@ RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip==9.0.3 
     pip --no-cache-dir --disable-pip-version-check install h5py tqdm scipy seaborn tables root_numpy && \
     pip --no-cache-dir --disable-pip-version-check install pandas scikit-image scikit-learn Pillow opencv-python && \
     pip --no-cache-dir --disable-pip-version-check install jupyter notebook && \
-    pip --no-cache-dir --disable-pip-version-check install plotly cufflinks
+    pip --no-cache-dir --disable-pip-version-check install plotly cufflinks && \
+    pip --no-cache-dir --disable-pip-version-check install osfclient
 
 
 

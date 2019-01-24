@@ -21,9 +21,9 @@ RUN apt-get install -y locales && \
     apt-get -y install asciinema
 
 # ROOT
-RUN wget https://root.cern.ch/download/root_v6.14.06.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
-    tar -xzf root_v6.14.06.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
-    rm root_v6.14.06.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+RUN wget https://root.cern.ch/download/root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+    tar -xzf root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+    rm root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
     mv root /usr/local/root && \
     export ROOTSYS=/usr/local/root && \
     export PATH=${ROOTSYS}/bin:${PATH} && \

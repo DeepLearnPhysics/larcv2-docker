@@ -1,0 +1,85 @@
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+LABEL maintainer="drinkingkazu"
+LABEL contact="contact@deeplearnphysics.org"
+LABEL version="ub16.04-cuda90-tf1.12.0-root6.14.04"
+
+ENV CUDA_DEVICE_ORDER=PCI_BUS_ID
+ENV ROOTSYS=/usr/local/root
+ENV PATH="${ROOTSYS}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
+
+RUN apt-get -y update
+RUN apt-get -y install zsh dpkg-dev g++ gcc binutils libqt4-dev git wget emacs vim openssh-client && \
+    apt-get -y install python-dev python-tk python-pip python-qt4 python-setuptools libsparsehash-dev python3-setuptools libhdf5-dev
+
+# asciinema
+RUN apt-get install -y locales && \
+    locale-gen en_US.UTF-8 && \
+    apt-get -y install software-properties-common python-software-properties && \
+    apt-add-repository -y ppa:zanchey/asciinema && \
+    apt-get -y update && \
+    apt-get -y install asciinema
+
+# ROOT
+RUN wget https://root.cern.ch/download/root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+    tar -xzf root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+    rm root_v6.14.04.Linux-ubuntu16-x86_64-gcc5.4.tar.gz && \
+    mv root /usr/local/root && \
+    export ROOTSYS=/usr/local/root && \
+    export PATH=${ROOTSYS}/bin:${PATH} && \
+    export LD_LIBRARY_PATH=${ROOTSYS}/lib:${LD_LIBRARY_PATH} && \
+    export PYTHONPATH=${ROOTSYS}/lib:${PYTHONPATH}
+
+# pip basics
+RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip==9.0.3 && \
+    pip --no-cache-dir --disable-pip-version-check install --upgrade setuptools && \
+    pip --no-cache-dir --disable-pip-version-check install 'matplotlib<3.0' && \
+    pip --no-cache-dir --disable-pip-version-check install 'ipython<6.0'    && \
+    pip --no-cache-dir --disable-pip-version-check install 'ipykernel<5.0'  && \
+    pip --no-cache-dir --disable-pip-version-check install future numpy wheel zmq six pygments pyyaml cython gputil psutil humanize && \
+    pip --no-cache-dir --disable-pip-version-check install h5py tqdm scipy seaborn tables root_numpy && \
+    pip --no-cache-dir --disable-pip-version-check install pandas scikit-image scikit-learn Pillow opencv-python && \
+    pip --no-cache-dir --disable-pip-version-check install jupyter notebook && \
+    pip --no-cache-dir --disable-pip-version-check install plotly cufflinks && \
+    pip --no-cache-dir --disable-pip-version-check install osfclient
+
+# larcv build
+ENV LARCV_BASEDIR=/app/larcv2
+ENV LARCV_BUILDDIR="${LARCV_BASEDIR}/build"
+ENV LARCV_COREDIR="${LARCV_BASEDIR}/larcv/core"
+ENV LARCV_APPDIR="${LARCV_BASEDIR}/larcv/app"
+ENV LARCV_LIBDIR="${LARCV_BUILDDIR}/lib"
+ENV LARCV_INCDIR="${LARCV_BUILDDIR}/include"
+ENV LARCV_BINDIR="${LARCV_BUILDDIR}/bin"
+ENV LARCV_ROOT6=1
+ENV LARCV_CXX=g++
+
+# with numpy
+ENV LARCV_NUMPY=1
+ENV LARCV_INCLUDES="-I${LARCV_INCDIR} -I/usr/include/python2.7 -I/usr/include/x86_64-linux-gnu/python2.7"
+ENV LARCV_LIBS="-L/usr/lib/ -L/usr/lib/python2.7/config-x86_64-linux-gnu -L/usr/lib"
+ENV LARCV_LIBS="${LARCV_LIBS} -lpthread -ldl -lutil -lm -lpython2.7 -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions"
+ENV LARCV_LIBS="${LARCV_LIBS} -L${LARCV_LIBDIR} -llarcv"
+
+# set bin and lib path
+ENV PATH=${LARCV_BASEDIR}/bin:${LARCV_BINDIR}:${PATH}
+ENV LD_LIBRARY_PATH=${LARCV_LIBDIR}:${LD_LIBRARY_PATH}:
+ENV PYTHONPATH=${LARCV_BASEDIR}/python:${PYTHONPATH}
+
+# larcv
+RUN mkdir -p /app && \
+    cd /app && \
+    git clone https://github.com/DeepLearnPhysics/larcv2 && \
+    cd larcv2 && \
+    git checkout v1.0.0_rc01 && \
+    mkdir -p $LARCV_BUILDDIR && \
+    mkdir -p $LARCV_LIBDIR && \
+    mkdir -p $LARCV_BINDIR && \
+    make -j4
+
+# tensorflow
+RUN pip --no-cache-dir --disable-pip-version-check install --upgrade tensorflow-gpu==1.12.0 && \
+    pip --no-cache-dir --disable-pip-version-check install tensorboard && \
+    pip --no-cache-dir --disable-pip-version-check install keras
+

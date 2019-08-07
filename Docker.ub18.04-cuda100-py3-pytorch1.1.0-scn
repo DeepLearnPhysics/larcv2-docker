@@ -65,7 +65,8 @@ RUN pip3 --no-cache-dir install --upgrade setuptools && \
     pip3 --no-cache-dir install numpy wheel zmq six pygments pyyaml cython pytest && \
     pip3 --no-cache-dir install gputil psutil humanize h5py tqdm && \
     pip3 --no-cache-dir install scipy tables pandas scikit-image scikit-learn Pillow opencv-python rootpy && \
-    pip3 --no-cache-dir install matplotlib seaborn plotly cufflinks && \
+    pip3 --no-cache-dir install matplotlib seaborn cufflinks && \
+    pip3 --no-cache-dir install plotly==3.10.0 && \
     pip3 --no-cache-dir install ipython #'ipython<6.0' && \
     pip3 --no-cache-dir install ipykernel && \
     pip3 --no-cache-dir install jupyter notebook

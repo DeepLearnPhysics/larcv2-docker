@@ -1,6 +1,10 @@
 FROM ubuntu:18.04
 
-MAINTAINER kterao@slac.stanford.edu
+LABEL maintainer="drinkingkazu"
+LABEL contact="contact@deeplearnphysics.org"
+LABEL version="minimal"
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 ENV ROOTSYS=/usr/local/root
 ENV PATH="${ROOTSYS}/bin:${PATH}"

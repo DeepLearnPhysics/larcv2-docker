@@ -1,0 +1,29 @@
+FROM deeplearnphysics/larcv2:ub18.04-gpu
+
+LABEL maintainer="drinkingkazu"
+LABEL contact="contact@deeplearnphysics.org"
+LABEL type="cpu-ana0"
+LABEL version="ub18.04-root6.16.00"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ENV ROOTSYS=/usr/local/root
+ENV PATH="${ROOTSYS}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
+
+# ana0
+RUN apt-get -y install gdb valgrind screen tmux libhdf5-dev
+
+# pip basics
+RUN pip3 --no-cache-dir install --upgrade setuptools && \
+    pip3 --no-cache-dir install numpy wheel zmq six pygments pyyaml cython pytest && \
+    pip3 --no-cache-dir install gputil psutil humanize h5py tqdm && \
+    pip3 --no-cache-dir install scipy tables pandas scikit-image scikit-learn Pillow opencv-python rootpy root_numpy&& \
+    pip3 --no-cache-dir install matplotlib seaborn cufflinks && \
+    pip3 --no-cache-dir install plotly plotly_express && \
+    pip3 --no-cache-dir install ipython ipykernel && \
+    pip3 --no-cache-dir install jupyter notebook jupyterthemes jupyterlab && \
+    pip3 --no-cache-dir install html-parser && \
+    pip3 --no-cache-dir install dash dash_renderer && \
+    pip3 --no-cache-dir install dash_html_components dash_core_components dash_bootstrap_components

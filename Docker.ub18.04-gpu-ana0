@@ -2,7 +2,7 @@ FROM deeplearnphysics/larcv2:ub18.04-gpu
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
-LABEL type="cpu-ana0"
+LABEL type="gpu-ana0"
 LABEL version="ub18.04-root6.16.00"
 
 ARG DEBIAN_FRONTEND=noninteractive

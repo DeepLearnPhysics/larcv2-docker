@@ -1,0 +1,26 @@
+FROM deeplearnphysics/larcv2:ub18.04-gpu-ana0
+
+LABEL maintainer="drinkingkazu"
+LABEL contact="contact@deeplearnphysics.org"
+LABEL type="gpu-ana0-ml"
+LABEL version="ub18.04-root6.16.00-pytorch1.0.0-ml"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# ROOT
+ENV ROOTSYS=/usr/local/root
+ENV PATH="${ROOTSYS}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
+
+# hash lib
+RUN apt-get -y install libsparsehash-dev
+
+# pytorch
+RUN pip3 --no-cache-dir install https://download.pytorch.org/whl/cu100/torch-1.1.0-cp36-cp36m-linux_x86_64.whl
+
+# scn
+RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ scn-cuda10-py3=="0.2.415.27"
+
+# pytorch-geometric
+RUN pip3 --no-cache-dir install torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric

@@ -2,7 +2,7 @@ FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
-LABEL type="cpu"
+LABEL type="gpu"
 LABEL version="ub18.04-root6.16.00"
 
 ARG DEBIAN_FRONTEND=noninteractive

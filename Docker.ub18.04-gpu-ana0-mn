@@ -1,0 +1,45 @@
+FROM deeplearnphysics/larcv2:ub18.04-gpu-ana0
+
+LABEL maintainer="drinkingkazu"
+LABEL contact="contact@deeplearnphysics.org"
+LABEL type="gpu-ana0-ml"
+LABEL version="ub18.04-root6.16.00-pytorch1.0.0-mn"
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0+PTX 7.5+PTX"
+ARG CUDA="10.0"
+ARG CUDNN="7"
+
+# ROOT
+ENV ROOTSYS=/usr/local/root
+ENV PATH="${ROOTSYS}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
+
+# CUDA
+ENV PATH=/usr/local/cuda/bin:$PATH
+ENV CPATH=/usr/local/cuda/include:$CPATH
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+ENV DYLD_LIBRARY_PATH=/usr/local/cuda/lib:$DYLD_LIBRARY_PATH
+
+# hash lib
+RUN apt-get -y install libsparsehash-dev apt-utils
+
+# pytorch
+RUN pip3 --no-cache-dir install torch
+#RUN pip3 --no-cache-dir install torchvision
+
+# pytorch-geometric
+RUN pip3 --no-cache-dir install torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric
+
+# pyro
+RUN pip3 --no-cache-dir install pyro-ppl
+
+# minkowskinet
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+RUN apt-get -y install libopenblas-dev
+RUN mkdir /app && \
+    cd /app && \
+    git clone https://github.com/StanfordVL/MinkowskiEngine.git && \
+    cd MinkowskiEngine && \
+    python3 setup.py install

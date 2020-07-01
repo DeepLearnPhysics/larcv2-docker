@@ -62,4 +62,4 @@ RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ scn-cuda10.2=="
 
 # minkowski engine
 RUN apt-get -y install libopenblas-dev
-RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ ME-cuda10.2="0.4.3"
+RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ ME-cuda10.2=="0.4.3"

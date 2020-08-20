@@ -60,14 +60,6 @@ RUN mkdir -p /app && \
 # scn
 RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ scn-cuda10.2=="0.2.5232020"
 
-# Jupyter lab
-RUN pip3 --no-cache-dir install jupyterlab "ipywidgets>=7.5" && \
-    pip3 --no-cache-dir install psutil requests && \
-    pip3 --no-cache-dir install plotly-geo==1.0.0
-
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get -y install nodejs
-RUN apt-cache policy nodejs
-RUN jupyter labextension install jupyterlab-plotly@4.8.0 && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager plotlywidget@4.8.0
-    
+# minkowski engine
+RUN apt-get -y install libopenblas-dev
+RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ ME-cuda10.2=="0.4.3"

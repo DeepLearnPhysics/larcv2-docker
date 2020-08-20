@@ -1,0 +1,55 @@
+FROM deeplearnphysics/larcv2:ub18.04-cuda10.2-extra
+
+LABEL maintainer="drinkingkazu"
+LABEL contact="contact@deeplearnphysics.org"
+LABEL type="gpu"
+LABEL version="ub18.04-cuda10.2-torch1.4-extra-edep"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# root
+ENV ROOTSYS=/usr/local/root
+ENV PATH="${ROOTSYS}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
+
+# larcv build
+ENV LARCV_BASEDIR=/app/larcv2
+ENV LARCV_BUILDDIR="${LARCV_BASEDIR}/build"
+ENV LARCV_COREDIR="${LARCV_BASEDIR}/larcv/core"
+ENV LARCV_APPDIR="${LARCV_BASEDIR}/larcv/app"
+ENV LARCV_LIBDIR="${LARCV_BUILDDIR}/lib"
+ENV LARCV_INCDIR="${LARCV_BUILDDIR}/include"
+ENV LARCV_BINDIR="${LARCV_BUILDDIR}/bin"
+ENV LARCV_ROOT6=1
+ENV LARCV_CXX=g++
+
+# with numpy
+ENV LARCV_NUMPY=1
+ENV LARCV_PYTHON=/usr/bin/python3
+ENV LARCV_PYTHON_CONFIG=python3.6-config
+ENV LARCV_INCLUDES=" -I/app/larcv2/build/include -I/usr/include/python3.6m -I/usr/include/python3.6m -I/usr/local/lib/python3.6/dist-packages/numpy/c\
+ore/include"
+ENV LARCV_LIBS=" -L/usr/lib/ -L/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu -L/usr/lib -lpython3.6m -lpthread -ldl -lutil -lm -Xlinker -export-dyn\
+amic -Wl,-O1 -Wl,-Bsymbolic-functions -L/app/larcv2/build/lib -llarcv"
+
+# set bin and lib path
+ENV PATH=${LARCV_BASEDIR}/bin:${LARCV_BINDIR}:${PATH}
+ENV LD_LIBRARY_PATH=${LARCV_LIBDIR}:${LD_LIBRARY_PATH}:
+ENV PYTHONPATH=${LARCV_BASEDIR}/python:${PYTHONPATH}
+
+# MinkowskiEngine
+#RUN apt-get install -y libopenblas-dev
+#RUN pip3 --no-cache-dir install -U MinkowskiEngine -v
+
+# cmake
+RUN apt-get install -y cmake
+RUN mkdir -p /app/geant4/work && cd /app/geant4/work && \
+    wget https://github.com/Geant4/geant4/archive/v10.6.2.tar.gz && \
+    tar -xzf v10.6.2.tar.gz && \
+    mkdir geant4.10.06-build && \
+    cd geant4.10.06-build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/app/geant4/ /app/geant4/work/geant4-10.6.2 && \
+    make -j4 VERBOSE=1 && \
+    make install && \
+    rm -rf /app/geant4/work

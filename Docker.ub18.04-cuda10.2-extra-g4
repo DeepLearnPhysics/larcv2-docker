@@ -3,7 +3,7 @@ FROM deeplearnphysics/larcv2:ub18.04-cuda10.2-extra
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub18.04-cuda10.2-torch1.4-extra-edep"
+LABEL version="ub18.04-cuda10.2-torch1.4-extra-g4"
 
 ARG DEBIAN_FRONTEND=noninteractive
 

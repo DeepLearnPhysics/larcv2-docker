@@ -8,7 +8,7 @@ LABEL version="ub18.04-cuda10.2-torch1.4-extra"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # root
-ENV ROOTSYS=/usr/local/root
+ENV ROOTSYS=/app/root
 ENV PATH="${ROOTSYS}/bin:${PATH}"
 ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
 ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
@@ -39,11 +39,16 @@ ENV LD_LIBRARY_PATH=${LARCV_LIBDIR}:${LD_LIBRARY_PATH}:
 ENV PYTHONPATH=${LARCV_BASEDIR}/python:${PYTHONPATH}
 
 # ROOT
-#RUN apt-get -y install libxpm-dev libxft-dev libxext-dev libssl-dev libftgl-dev libfftw3-dev libxml2-dev libkrb5-dev
-RUN wget https://www.nevis.columbia.edu/~kazuhiro/ub18.04-py3-rootv6.16.00.tgz && \
-   tar -xzf ub18.04-py3-rootv6.16.00.tgz && \
-   rm ub18.04-py3-rootv6.16.00.tgz && \
-   mv root /usr/local/root
+RUN apt-get -y install cmake libx11-dev libxpm-dev libxft-dev libxext-dev libssl-dev
+#RUN wget https://root.cern/download/root_v6.22.02.Linux-ubuntu18-x86_64-gcc7.5.tar.gz && \
+#    tar -xzf root_v6.22.02.Linux-ubuntu18-x86_64-gcc7.5.tar.gz && \
+#    rm root_v6.22.02.Linux-ubuntu18-x86_64-gcc7.5.tar.gz && \
+#    mkdir -p /app && mv root /app/root
+RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1tZpuZTWN0sY8QA-OG2ACZAYLukHDL-Lb' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1tZpuZTWN0sY8QA-OG2ACZAYLukHDL-Lb" -O root.tar.gz && \
+    rm /tmp/cookies.txt && \
+    tar -xzf root.tar.gz && \
+    rm root.tar.gz && \
+    mkdir -p /app && mv root /app/root
 RUN pip3 --no-cache-dir install rootpy root_numpy
 
 # larcv

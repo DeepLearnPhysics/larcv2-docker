@@ -46,6 +46,19 @@ ENV PATH=${LARCV_BASEDIR}/bin:${LARCV_BINDIR}:${PATH}
 ENV LD_LIBRARY_PATH=${LARCV_LIBDIR}:${LD_LIBRARY_PATH}:
 ENV PYTHONPATH=${LARCV_BASEDIR}/python:${PYTHONPATH}
 
+# for geant4
+ENV G4NEUTRONHPDATA="/app/geant4/share/Geant4-10.6.2/data/G4NDL4.6"
+ENV G4LEDATA="/app/geant4/share/Geant4-10.6.2/data/G4EMLOW7.9.1"
+ENV G4LEVELGAMMADATA="/app/geant4/share/Geant4-10.6.2/data/PhotonEvaporation5.5"
+ENV G4RADIOACTIVEDATA="/app/geant4/share/Geant4-10.6.2/data/RadioactiveDecay5.4"
+ENV G4PARTICLEXSDATA="/app/geant4/share/Geant4-10.6.2/data/G4PARTICLEXS2.1"
+ENV G4PIIDATA="/app/geant4/share/Geant4-10.6.2/data/G4PII1.3"
+ENV G4REALSURFACEDATA="/app/geant4/share/Geant4-10.6.2/data/RealSurface2.1.1"
+ENV G4SAIDXSDATA="/app/geant4/share/Geant4-10.6.2/data/G4SAIDDATA2.0"
+ENV G4ABLADATA="/app/geant4/share/Geant4-10.6.2/data/G4ABLA3.1"
+ENV G4INCLDATA="/app/geant4/share/Geant4-10.6.2/data/G4INCL1.0"
+ENV G4ENSDFSTATEDATA="/app/geant4/share/Geant4-10.6.2/data/G4ENSDFSTATE2.2"
+
 # Geant4
 RUN apt-get -y install libxerces-c-dev && \
     wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1vvPiZgeR2l_gtlaVNGySXhL3Z5zo2h52' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1vvPiZgeR2l_gtlaVNGySXhL3Z5zo2h52" -O geant4.tar.gz && \
@@ -54,11 +67,17 @@ RUN apt-get -y install libxerces-c-dev && \
     rm geant4.tar.gz && \
     mkdir -p /app && mv geant4-docker /app/geant4
 
-#RUN /app/root/bin/thisroot.sh && /app/geant4/bin/geant4.sh && \
-RUN git clone https://github.com/ClarkMcGrew/edep-sim && \
-    mkdir edep-sim-build /app/edep && \
-    cd edep-sim-build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF ../edep-sim && \
-    make && make install && \
-    cd .. && rm -r edep-sim edep-sim-build
+# edep-sim
+RUN apt-get -y install libxerces-c-dev && \
+    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1ObLd_Z63jcCmfj4iUGB0n0nKO2kE00nQ' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1ObLd_Z63jcCmfj4iUGB0n0nKO2kE00nQ" -O edep.tar.gz && \
+    rm /tmp/cookies.txt && \
+    tar -xzf edep.tar.gz && \
+    rm edep.tar.gz && \
+    mkdir -p /app && mv edep /app/edep
+#RUN git clone https://github.com/ClarkMcGrew/edep-sim && \
+#    mkdir edep-sim-build /app/edep && \
+#    cd edep-sim-build && \
+#    cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF ../edep-sim && \
+#    make && make install && \
+#    cd .. && rm -r edep-sim edep-sim-build
 

@@ -13,6 +13,14 @@ ENV PATH="${ROOTSYS}/bin:${PATH}"
 ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
 ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
 
+# geant4
+ENV PATH="/app/geant4/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/app/geant4/lib:${LD_LIBRARY_PATH}"
+
+#edepsim
+ENV PATH="/app/edep/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/app/edep/lib:${LD_LIBRARY_PATH}"
+
 # larcv build
 ENV LARCV_BASEDIR=/app/larcv2
 ENV LARCV_BUILDDIR="${LARCV_BASEDIR}/build"
@@ -40,8 +48,17 @@ ENV PYTHONPATH=${LARCV_BASEDIR}/python:${PYTHONPATH}
 
 # Geant4
 RUN apt-get -y install libxerces-c-dev && \
-    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1V_pWq-C8EnT7KMD_UGcZS7T1cLpckDGw' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1V_pWq-C8EnT7KMD_UGcZS7T1cLpckDGw" -O geant4.tar.gz && \
+    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1vvPiZgeR2l_gtlaVNGySXhL3Z5zo2h52' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1vvPiZgeR2l_gtlaVNGySXhL3Z5zo2h52" -O geant4.tar.gz && \
     rm /tmp/cookies.txt && \
     tar -xzf geant4.tar.gz && \
     rm geant4.tar.gz && \
-    mv geant4.10.06.p02-install /app/geant4
+    mkdir -p /app && mv geant4-docker /app/geant4
+
+#RUN /app/root/bin/thisroot.sh && /app/geant4/bin/geant4.sh && \
+RUN git clone https://github.com/ClarkMcGrew/edep-sim && \
+    mkdir edep-sim-build /app/edep && \
+    cd edep-sim-build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF ../edep-sim && \
+    make && make install && \
+    cd .. && rm -r edep-sim edep-sim-build
+

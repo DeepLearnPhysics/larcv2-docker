@@ -75,7 +75,7 @@ RUN apt-get -y install libxerces-c-dev && \
 #    rm edep.tar.gz && \
 #    mkdir -p /app && mv edep /app/edep
 RUN mkdir -p edep-build /app/edep /source && \
-    git clone https://github.com/ClarkMcGrew/edep-sim && mv edep-sim /source/ && \
+    git clone https://github.com/ClarkMcGrew/edep-sim && mv edep-sim /source/edep && \
     cd edep-build && \
     cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF /source/edep && \
     make && make install && \

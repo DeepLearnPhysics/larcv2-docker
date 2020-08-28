@@ -68,16 +68,15 @@ RUN apt-get -y install libxerces-c-dev && \
     mkdir -p /app && mv geant4-docker /app/geant4
 
 # edep-sim
-RUN apt-get -y install libxerces-c-dev && \
-    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1ObLd_Z63jcCmfj4iUGB0n0nKO2kE00nQ' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1ObLd_Z63jcCmfj4iUGB0n0nKO2kE00nQ" -O edep.tar.gz && \
-    rm /tmp/cookies.txt && \
-    tar -xzf edep.tar.gz && \
-    rm edep.tar.gz && \
-    mkdir -p /app && mv edep /app/edep
-#RUN git clone https://github.com/ClarkMcGrew/edep-sim && \
-#    mkdir edep-sim-build /app/edep && \
-#    cd edep-sim-build && \
-#    cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF ../edep-sim && \
-#    make && make install && \
-#    cd .. && rm -r edep-sim edep-sim-build
-
+#RUN apt-get -y install libxerces-c-dev && \
+#    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1ObLd_Z63jcCmfj4iUGB0n0nKO2kE00nQ' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1ObLd_Z63jcCmfj4iUGB0n0nKO2kE00nQ" -O edep.tar.gz && \
+#    rm /tmp/cookies.txt && \
+#    tar -xzf edep.tar.gz && \
+#    rm edep.tar.gz && \
+#    mkdir -p /app && mv edep /app/edep
+RUN mkdir -p edep-build /app/edep /source && \
+    git clone https://github.com/ClarkMcGrew/edep-sim && mv edep-sim /source/ && \
+    cd edep-build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF /source/edep && \
+    make && make install && \
+    cd .. && rm -r edep-build

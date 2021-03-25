@@ -1,9 +1,9 @@
-FROM deeplearnphysics/larcv2:ub18.04-cuda10.2
+FROM deeplearnphysics/larcv2:ub18.04-cuda10.2-pytorch1.7.1
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub18.04-cuda10.2-torch1.4-extra"
+LABEL version="ub18.04-cuda10.2-pytorch1.7.1-extra"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -63,8 +63,12 @@ RUN mkdir -p /app && \
     make -j4
 
 # scn
-RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ scn-cuda10.2=="0.2.5232020"
+RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ scn-cuda10.2=="0.2.20210128"
 
 # minkowski engine
-RUN apt-get -y install libopenblas-dev
-RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ ME-cuda10.2=="0.4.3"
+#RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ ME-cuda10.2=="0.4.3"
+#RUN pip3 --no-cache-dir install git+https://github.com/NVIDIA/MinkowskiEngine.git # ME 0.5 beta
+RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ ME-cuda10.2=="0.5.0.20210203"
+
+# remove temporary cache
+RUN apt-get autoremove -y && apt-get clean -y

@@ -1,9 +1,9 @@
-FROM deeplearnphysics/larcv2:ub18.04-cuda10.2-extra
+FROM deeplearnphysics/larcv2:ub18.04-cuda10.2-pytorch1.7.1-extra
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub18.04-cuda10.2-extra-edepsim"
+LABEL version="ub18.04-cuda10.2-pytorch1.7.1-edepsim"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -80,3 +80,6 @@ RUN mkdir -p edep-build /app/edep /source && \
     cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF /source/edep && \
     make && make install && \
     cd .. && rm -r edep-build
+
+# remove temporary cache
+RUN apt-get autoremove -y && apt-get clean -y

@@ -3,7 +3,7 @@ FROM nvidia/cuda:11.1-cudnn8-devel-ubuntu20.04
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub20.04-cuda11.1-pytorch1.7.1"
+LABEL version="ub20.04-cuda11.1-pytorch1.8.0"
 
 ARG DEBIAN_FRONTEND=noninteractive
 

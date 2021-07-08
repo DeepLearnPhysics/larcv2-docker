@@ -1,0 +1,63 @@
+FROM deeplearnphysics/larcv2:ub18.04-cuda10.2
+
+LABEL maintainer="drinkingkazu"
+LABEL contact="contact@deeplearnphysics.org"
+LABEL type="gpu"
+LABEL version="ub18.04-cuda10.2-torch1.4-extra"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# root
+ENV ROOTSYS=/app/root
+ENV PATH="${ROOTSYS}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
+
+# larcv build
+ENV LARCV_BASEDIR=/app/larcv2
+ENV LARCV_BUILDDIR="${LARCV_BASEDIR}/build"
+ENV LARCV_COREDIR="${LARCV_BASEDIR}/larcv/core"
+ENV LARCV_APPDIR="${LARCV_BASEDIR}/larcv/app"
+ENV LARCV_LIBDIR="${LARCV_BUILDDIR}/lib"
+ENV LARCV_INCDIR="${LARCV_BUILDDIR}/include"
+ENV LARCV_BINDIR="${LARCV_BUILDDIR}/bin"
+ENV LARCV_ROOT6=1
+ENV LARCV_CXX=g++
+
+# with numpy
+ENV LARCV_NUMPY=1
+ENV LARCV_PYTHON=/usr/bin/python3
+ENV LARCV_PYTHON_CONFIG=python3.6-config
+ENV LARCV_INCLUDES=" -I/app/larcv2/build/include -I/usr/include/python3.6m -I/usr/include/python3.6m -I/usr/local/lib/python3.6/dist-packages/numpy/c\
+ore/include"
+ENV LARCV_LIBS=" -L/usr/lib/ -L/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu -L/usr/lib -lpython3.6m -lpthread -ldl -lutil -lm -Xlinker -export-dyn\
+amic -Wl,-O1 -Wl,-Bsymbolic-functions -L/app/larcv2/build/lib -llarcv"
+
+# set bin and lib path
+ENV PATH=${LARCV_BASEDIR}/bin:${LARCV_BINDIR}:${PATH}
+ENV LD_LIBRARY_PATH=${LARCV_LIBDIR}:${LD_LIBRARY_PATH}:
+ENV PYTHONPATH=${LARCV_BASEDIR}/python:${PYTHONPATH}
+
+# PYTHIA/GENIE/ROOT
+
+RUN apt-get update && rm /usr/bin/python && ln -s /usr/bin/python3.6 /usr/bin/python
+
+RUN apt-get -y install cmake libx11-dev libxpm-dev libxft-dev libxext-dev libssl-dev liblog4cpp5v5
+RUN wget http://www.hepforge.org/archive/lhapdf/LHAPDF-6.3.0.tar.gz && \
+    tar xzvf LHAPDF-6.3.0.tar.gz && \
+    cd LHAPDF-6.3.0 && \
+    ./configure --prefix=/usr && \
+    make && \
+    make install
+
+RUN apt-get -y install gfortran && \
+	mkdir -p /app/pythia6 && cd /app/pythia6 && \
+    wget https://raw.githubusercontent.com/GENIE-MC/Generator/master/src/scripts/build/ext/build_pythia6.sh && \
+    chmod a+x build_pythia6.sh && \
+    ./build_pythia6.sh 6428
+
+RUN apt-get autoremove -y && apt-get clean -y
+
+
+    
+

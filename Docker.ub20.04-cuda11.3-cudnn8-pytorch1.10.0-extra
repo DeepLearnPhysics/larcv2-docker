@@ -1,0 +1,67 @@
+FROM deeplearnphysics/larcv2:ub20.04-cuda11.3-cudnn8-pytorch1.10.0
+
+LABEL maintainer="drinkingkazu"
+LABEL contact="contact@deeplearnphysics.org"
+LABEL type="gpu"
+LABEL version="ub20.04-cuda11.3-cudnn8-pytorch1.10.0-extra"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# for user-specific temporary files
+ENV XDG_RUNTIME_DIR=/tmp/$USER
+
+# root
+ENV ROOTSYS=/app/root
+ENV PATH="${ROOTSYS}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${ROOTSYS}/lib:${LD_LIBRARY_PATH}"
+ENV PYTHONPATH="${ROOTSYS}/lib:${PYTHONPATH}"
+
+# larcv build
+ENV LARCV_BASEDIR=/app/larcv2
+ENV LARCV_BUILDDIR="${LARCV_BASEDIR}/build"
+ENV LARCV_COREDIR="${LARCV_BASEDIR}/larcv/core"
+ENV LARCV_APPDIR="${LARCV_BASEDIR}/larcv/app"
+ENV LARCV_LIBDIR="${LARCV_BUILDDIR}/lib"
+ENV LARCV_INCDIR="${LARCV_BUILDDIR}/include"
+ENV LARCV_BINDIR="${LARCV_BUILDDIR}/bin"
+ENV LARCV_ROOT6=1
+ENV LARCV_CXX=g++
+
+# with numpy
+ENV LARCV_NUMPY=1
+ENV LARCV_PYTHON=/usr/bin/python3
+ENV LARCV_PYTHON_CONFIG=python3.8-config
+ENV LARCV_INCLUDES=" -I/app/larcv2/build/include -I/usr/include/python3.8  -I/usr/local/lib/python3.8/dist-packages/numpy/core/include"
+ENV LARCV_LIBS=" -L/usr/lib/ -L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -L/app/larcv2/build/lib -llarcv"
+
+# set bin and lib path
+ENV PATH=${LARCV_BASEDIR}/bin:${LARCV_BINDIR}:${PATH}
+ENV LD_LIBRARY_PATH=${LARCV_LIBDIR}:${LD_LIBRARY_PATH}:
+ENV PYTHONPATH=${LARCV_BASEDIR}/python:${PYTHONPATH}
+
+# ROOT
+RUN apt-get -y install cmake libx11-dev libxpm-dev libxft-dev libxext-dev libssl-dev
+#RUN wget https://root.cern/download/root_v6.22.02.Linux-ubuntu18-x86_64-gcc7.5.tar.gz && \
+#    tar -xzf root_v6.22.02.Linux-ubuntu18-x86_64-gcc7.5.tar.gz && \
+#    rm root_v6.22.02.Linux-ubuntu18-x86_64-gcc7.5.tar.gz && \
+#    mkdir -p /app && mv root /app/root
+RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1RDPTyBnhFp0N2l1kKCkrwdQkMAaqKxbg' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1RDPTyBnhFp0N2l1kKCkrwdQkMAaqKxbg" -O root.tar.gz && \
+    rm /tmp/cookies.txt && \
+    tar -xzf root.tar.gz && \
+    rm root.tar.gz && \
+    mkdir -p /app && mv root /app/root
+RUN pip3 --no-cache-dir install rootpy root_numpy uproot
+
+# larcv
+RUN mkdir -p /app && \
+    cd /app && \
+    git clone https://github.com/DeepLearnPhysics/larcv2 && \
+    cd larcv2 && \
+    git checkout v2.0.0 && \
+    mkdir -p $LARCV_BUILDDIR && \
+    mkdir -p $LARCV_LIBDIR && \
+    mkdir -p $LARCV_BINDIR && \
+    make -j4
+
+# remove temporary cache
+RUN apt-get autoremove -y && apt-get clean -y

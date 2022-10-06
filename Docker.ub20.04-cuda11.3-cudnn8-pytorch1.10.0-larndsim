@@ -23,7 +23,7 @@ ENV LD_LIBRARY_PATH="/app/geant4/lib:${LD_LIBRARY_PATH}"
 ENV PATH="/app/edep/bin:${PATH}"
 ENV LD_LIBRARY_PATH="/app/edep/lib:${LD_LIBRARY_PATH}"
 
-# larcv build
+# larcv
 ENV LARCV_BASEDIR=/app/larcv2
 ENV LARCV_BUILDDIR="${LARCV_BASEDIR}/build"
 ENV LARCV_COREDIR="${LARCV_BASEDIR}/larcv/core"
@@ -40,6 +40,16 @@ ENV LARCV_PYTHON=/usr/bin/python3
 ENV LARCV_PYTHON_CONFIG=python3.8-config
 ENV LARCV_INCLUDES=" -I/app/larcv2/build/include -I/usr/include/python3.8  -I/usr/local/lib/python3.8/dist-packages/numpy/core/include"
 ENV LARCV_LIBS=" -L/usr/lib/ -L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -L/app/larcv2/build/lib -llarcv"
+
+# DLPGenerator
+ENV DLPGENERATOR_ROOT6=1
+ENV DLPGENERATOR_CXX=g++
+ENV DLPGENERATOR_NUMPY=1
+ENV DLPGENERATOR_DIR=/app/DLPGenerator
+ENV DLPGENERATOR_BINDIR="${DLPGENERATOR_DIR}/bin"
+ENV DLPGENERATOR_INCDIR="${DLPGENERATOR_DIR}/build/include"
+ENV DLPGENERATOR_BUILDDIR="${DLPGENERATOR_DIR}/build"
+ENV DLPGENERATOR_LIBDIR="${DLPGENERATOR_DIR}/build/lib"
 
 # set bin and lib path
 ENV PATH=${LARCV_BASEDIR}/bin:${LARCV_BINDIR}:${PATH}
@@ -59,6 +69,9 @@ ENV G4ABLADATA="/app/geant4/share/Geant4-10.6.3/data/G4ABLA3.1"
 ENV G4INCLDATA="/app/geant4/share/Geant4-10.6.3/data/G4INCL1.0"
 ENV G4ENSDFSTATEDATA="/app/geant4/share/Geant4-10.6.3/data/G4ENSDFSTATE2.2"
 
+# Additional apt-get for edep-sim
+RUN apt-get -y install libyaml-cpp-dev
+
 # Geant4
 RUN apt-get -y install libxerces-c-dev && \
     wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1c-vPAs4cSkISVHxe_QoUWy5wZOdpeuid' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1c-vPAs4cSkISVHxe_QoUWy5wZOdpeuid" -O geant4.tar.gz && \
@@ -66,6 +79,12 @@ RUN apt-get -y install libxerces-c-dev && \
     tar -xzf geant4.tar.gz && \
     rm geant4.tar.gz && \
     mkdir -p /app && mv geant4 /app/geant4
+
+# DLPGenerator
+RUN cd /app && \
+    git clone https://github.com/DeepLearnPhysics/DLPGenerator && \
+    cd DLPGenerator && \
+    make 
 
 # edep-sim
 #RUN apt-get -y install libxerces-c-dev && \
@@ -75,19 +94,29 @@ RUN apt-get -y install libxerces-c-dev && \
 #    rm edep.tar.gz && \
 #    mkdir -p /app && mv edep /app/edep
 RUN mkdir -p edep-build /app/edep /source && \
-    git clone https://github.com/ClarkMcGrew/edep-sim && mv edep-sim /source/edep && \
+    #git clone https://github.com/ClarkMcGrew/edep-sim && \
+    git clone https://github.com/drinkingkazu/edep-sim && cd edep-sim && git checkout feat-mpvmpr && cd - && \
+    mv edep-sim /source/edep && \
     cd edep-build && \
     cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF /source/edep && \
     make && make install && \
     cd .. && rm -r edep-build
 
+# git lfs
+RUN mkdir -p /app/lfs && cd /app/lfs && \
+    wget https://github.com/git-lfs/git-lfs/releases/download/v3.1.2/git-lfs-linux-amd64-v3.1.2.tar.gz &&\
+    tar -xvf git-lfs-linux-amd64-v3.1.2.tar.gz && \
+    apt-get install git-lfs
+
 # larnd-sim
 RUN cd /app && \
-    git clone https://github.com/DeepLearnPhysics/larnd-sim && \
+    #git clone https://github.com/DeepLearnPhysics/larnd-sim && \
+    git clone https://github.com/DUNE/larnd-sim.git && \
+    #git clone https://github.com/drinkingkazu/larnd-sim.git && \
     cd larnd-sim && \
-    python3 setup.py install cupy=cupy-cuda113&& \
-    rm -rf /app/larnd-sim
-
+    git lfs pull && \
+    export SKIP_CUPY_INSTALL=1 && python3 setup.py install
+    
 # h5flow needs
 RUN pip3 install --no-cache-dir h5py pyyaml pip tqdm pytest pytest-mpi pyyaml-include
 RUN cd /app && \

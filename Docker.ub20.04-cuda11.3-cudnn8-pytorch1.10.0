@@ -22,7 +22,8 @@ RUN pip3 --no-cache-dir install --upgrade setuptools && \
     pip3 --no-cache-dir install jedi==0.17.2 && \
     pip3 --no-cache-dir install numpy wheel zmq six pygments pyyaml cython pytest numba pyzmq pyserial && \
     pip3 --no-cache-dir install gputil psutil humanize h5py tqdm fire sphinx-rtd-theme && \
-    pip3 --no-cache-dir install scipy tables pandas scikit-image scikit-learn Pillow opencv-python && \
+    pip3 --no-cache-dir install scipy tables pandas scikit-image scikit-learn scikit-build &&\
+    pip3 --no-cache-dir install Pillow opencv-python && \
     pip3 --no-cache-dir install matplotlib seaborn cufflinks && \
     #pip3 --no-cache-dir install plotly==4.14.3 plotly_express==0.4.1 && \
     pip3 --no-cache-dir install "plotly>=5" plotly_express && \

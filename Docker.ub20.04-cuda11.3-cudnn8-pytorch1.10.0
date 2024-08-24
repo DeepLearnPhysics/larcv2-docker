@@ -10,14 +10,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV XDG_RUNTIME_DIR=/tmp/$USER
 
 RUN apt-get -y update
-RUN apt-get -y install dpkg-dev g++ gcc binutils git wget curl emacs vim openssh-client krb5-user && \
+RUN apt-get -y install dpkg-dev g++ gcc binutils git wget curl emacs vim openssh-client krb5-user zsh && \
     apt-get -y install cmake libx11-dev libxpm-dev libxft-dev libxext-dev libssl-dev && \
     apt-get -y install python3-dev python3-tk python3-pip python3-setuptools && \
     apt-get -y install libopenblas-dev libxerces-c-dev && \
-    apt-get -y install gdb screen tmux libhdf5-dev # valgrind 
+    apt-get -y install gdb screen tmux libhdf5-dev git-lfs libyaml-cpp-dev # valgrind 
 
 # pip basics
-RUN pip3 --no-cache-dir install -U pip
 RUN pip3 --no-cache-dir install --upgrade setuptools && \
     pip3 --no-cache-dir install jedi==0.17.2 && \
     pip3 --no-cache-dir install numpy wheel zmq six pygments pyyaml cython pytest numba pyzmq pyserial && \
@@ -47,7 +46,8 @@ RUN apt-get -y install nodejs && \
 #    pip3 --no-cache-dir install kaleido
 RUN jupyter labextension install jupyterlab-plotly plotlywidget && \
     jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib && \
-    pip3 --no-cache-dir install kaleido
+    pip3 --no-cache-dir install kaleido && \
+    npm i docsify-cli -g
 
 # torch
 #RUN pip3 --no-cache-dir install torch==1.7.1 torchvision==0.8.2

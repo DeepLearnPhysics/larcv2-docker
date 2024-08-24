@@ -1,9 +1,9 @@
-FROM deeplearnphysics/larcv2:ub20.04-cuda11.3-cudnn8-pytorch1.10.0-extra
+FROM deeplearnphysics/larcv2:ub22.04-cuda12.1-pytorch2.2.1-extra
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub20.04-cuda11.3-cudnn8-pytorch1.10.0-larndsim"
+LABEL version="ub22.04-cuda12.1-pytorch2.2.1-larndsim"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -37,9 +37,9 @@ ENV LARCV_CXX=g++
 # with numpy
 ENV LARCV_NUMPY=1
 ENV LARCV_PYTHON=/usr/bin/python3
-ENV LARCV_PYTHON_CONFIG=python3.8-config
-ENV LARCV_INCLUDES=" -I/app/larcv2/build/include -I/usr/include/python3.8  -I/usr/local/lib/python3.8/dist-packages/numpy/core/include"
-ENV LARCV_LIBS=" -L/usr/lib/ -L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -L/app/larcv2/build/lib -llarcv"
+ENV LARCV_PYTHON_CONFIG=python3.10-config
+ENV LARCV_INCLUDES=" -I/app/larcv2/build/include -I/usr/include/python3.10  -I/usr/local/lib/python3.10/dist-packages/numpy/core/include"
+ENV LARCV_LIBS=" -L/usr/lib/ -L/usr/lib/python3.10/config-3.10-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -L/app/larcv2/build/lib -llarcv"
 
 # DLPGenerator
 ENV DLPGENERATOR_ROOT6=1
@@ -70,11 +70,8 @@ ENV G4INCLDATA="/app/geant4/share/Geant4-10.6.3/data/G4INCL1.0"
 ENV G4ENSDFSTATEDATA="/app/geant4/share/Geant4-10.6.3/data/G4ENSDFSTATE2.2"
 
 # Geant4
-RUN npm i docsify-cli -g && \
-    apt-get -y install zsh && \
-    mkdir -p /app && \
-    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1c-vPAs4cSkISVHxe_QoUWy5wZOdpeuid' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1c-vPAs4cSkISVHxe_QoUWy5wZOdpeuid" -O geant4.tar.gz && \
-    rm /tmp/cookies.txt && \
+RUN mkdir -p /app && \
+    gdown https://drive.google.com/uc?id=15iZ1ad6N16BCgFy7ww9Se4kh8ucW4h9R -O geant4.tar.gz && \
     tar -xzf geant4.tar.gz && \
     rm geant4.tar.gz && \
     mv geant4 /app/geant4 && \
@@ -85,23 +82,22 @@ RUN npm i docsify-cli -g && \
     cd /app && \
     mkdir -p edep-build /app/edep /source && \
     apt-get -y install libyaml-cpp-dev && \
-    git clone https://github.com/drinkingkazu/edep-sim && cd edep-sim && git checkout feat-mpvmpr && cd - && \
+    git clone https://github.com/lbl-neutrino/edep-sim && cd edep-sim && git checkout bomb && cd - && \
     mv edep-sim /source/edep && \
     cd edep-build && \
     cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF /source/edep && \
     make && make install && \
     cd .. && rm -r edep-build && \
     mkdir -p /app/lfs && cd /app/lfs && \
-    wget https://github.com/git-lfs/git-lfs/releases/download/v3.1.2/git-lfs-linux-amd64-v3.1.2.tar.gz &&\
-    tar -xvf git-lfs-linux-amd64-v3.1.2.tar.gz && \
-    apt-get -y install git-lfs && \
+    wget https://github.com/git-lfs/git-lfs/releases/download/v3.4.1/git-lfs-linux-amd64-v3.4.1.tar.gz &&\
+    tar -xvf git-lfs-linux-amd64-v3.4.1.tar.gz && \
+    apt-get install git-lfs && \
     cd /app && \
-    git clone https://github.com/DUNE/larnd-sim.git && \
-    cd larnd-sim && \
+    git clone https://github.com/DUNE/larnd-sim.git && cd larnd-sim && git checkout develop && \
     git lfs pull && \
-    export SKIP_CUPY_INSTALL=1 && python3 setup.py install && \
-    cd /app && \
-    git clone https://github.com/peter-madigan/h5flow && \
-    cd h5flow && git checkout develop && \
-    pip3 install --no-cache-dir . && \
+    export SKIP_CUPY_INSTALL=1 && pip3 install --no-cache-dir . && \
+    cd /app && git clone -b main https://github.com/larpix/h5flow.git && \
+    cd h5flow && pip install --no-cache-dir . && \
+    cd /app && git clone -b main https://github.com/DUNE/ndlar_flow.git && \
+    cd ndlar_flow && pip install --no-cache-dir . && \
     apt-get autoremove -y && apt-get clean -y

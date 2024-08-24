@@ -1,9 +1,9 @@
-FROM deeplearnphysics/larcv2:ub20.04-cuda11.3-cudnn8-pytorch1.10.0-extra
+FROM deeplearnphysics/larcv2:ub20.04-cuda11.6-pytorch1.13-extra
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub20.04-cuda11.3-cudnn8-pytorch1.10.0-larndsim"
+LABEL version="ub20.04-cuda11.6-pytorch1.13-larndsim"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -69,15 +69,14 @@ ENV G4ABLADATA="/app/geant4/share/Geant4-10.6.3/data/G4ABLA3.1"
 ENV G4INCLDATA="/app/geant4/share/Geant4-10.6.3/data/G4INCL1.0"
 ENV G4ENSDFSTATEDATA="/app/geant4/share/Geant4-10.6.3/data/G4ENSDFSTATE2.2"
 
+
 # Geant4
-RUN npm i docsify-cli -g && \
-    apt-get -y install zsh && \
-    mkdir -p /app && \
-    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1c-vPAs4cSkISVHxe_QoUWy5wZOdpeuid' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1c-vPAs4cSkISVHxe_QoUWy5wZOdpeuid" -O geant4.tar.gz && \
+RUN mkdir -p /app && \
+    wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1zrmjvIDXpoiHvZ3pIkeaCMnVaQk2SY-x' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1zrmjvIDXpoiHvZ3pIkeaCMnVaQk2SY-x" -O geant4.tar.gz && \
     rm /tmp/cookies.txt && \
     tar -xzf geant4.tar.gz && \
     rm geant4.tar.gz && \
-    mv geant4 /app/geant4 && \
+    mv geant4.10.06.p03-install /app/geant4 && \
     cd /app && \
     git clone https://github.com/DeepLearnPhysics/DLPGenerator && \
     cd DLPGenerator && \
@@ -85,7 +84,8 @@ RUN npm i docsify-cli -g && \
     cd /app && \
     mkdir -p edep-build /app/edep /source && \
     apt-get -y install libyaml-cpp-dev && \
-    git clone https://github.com/drinkingkazu/edep-sim && cd edep-sim && git checkout feat-mpvmpr && cd - && \
+    #git clone https://github.com/lbl-neutrino/edep-sim && cd edep-sim && git checkout bomb && cd - && \
+    git clone https://github.com/drinkingkazu/edep-sim && cd edep-sim && git checkout bomb && cd - && \
     mv edep-sim /source/edep && \
     cd edep-build && \
     cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF /source/edep && \
@@ -94,12 +94,12 @@ RUN npm i docsify-cli -g && \
     mkdir -p /app/lfs && cd /app/lfs && \
     wget https://github.com/git-lfs/git-lfs/releases/download/v3.1.2/git-lfs-linux-amd64-v3.1.2.tar.gz &&\
     tar -xvf git-lfs-linux-amd64-v3.1.2.tar.gz && \
-    apt-get -y install git-lfs && \
+    apt-get install git-lfs && \
     cd /app && \
-    git clone https://github.com/DUNE/larnd-sim.git && \
-    cd larnd-sim && \
+    git clone https://github.com/DUNE/larnd-sim.git && cd larnd-sim && git checkout develop && \
+    #git clone https://github.com/drinkingkazu/larnd-sim.git && cd larnd-sim && git checkout separator_support && \
     git lfs pull && \
-    export SKIP_CUPY_INSTALL=1 && python3 setup.py install && \
+    export SKIP_CUPY_INSTALL=1 && pip3 install --no-cache-dir . && \
     cd /app && \
     git clone https://github.com/peter-madigan/h5flow && \
     cd h5flow && git checkout develop && \

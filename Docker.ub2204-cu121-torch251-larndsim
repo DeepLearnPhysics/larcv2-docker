@@ -1,15 +1,15 @@
-FROM deeplearnphysics/larcv2:ub22.04-cuda12.1-pytorch2.4.0-extra
+FROM deeplearnphysics/larcv2:ub2204-cu121-torch251-extra
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub22.04-cuda12.1-pytorch2.4.0-larndsim"
+LABEL version="ub2204-cu121-torch251-larndsim"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV XDG_RUNTIME_DIR=/tmp/$USER
-ENV HDF5_MPI=ON
-ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
+#ENV HDF5_MPI=ON
+#ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
 ENV CUDA_HOME=/usr/local/cuda-12.1
 
 # root
@@ -91,19 +91,23 @@ RUN apt-get -y install python3-venv && \
     cd edep-build && \
     cmake -DCMAKE_INSTALL_PREFIX=/app/edep -DEDEPSIM_DISPLAY=OFF /source/edep && \
     make && make install && \
-    cd .. && rm -r edep-build && \
-    mkdir -p /app/lfs && cd /app/lfs && \
+    cd .. && rm -r edep-build
+
+# ND sim/flow dependency
+RUN mkdir -p /app/lfs && cd /app/lfs && \
     wget https://github.com/git-lfs/git-lfs/releases/download/v3.4.1/git-lfs-linux-amd64-v3.4.1.tar.gz &&\
     tar -xvf git-lfs-linux-amd64-v3.4.1.tar.gz && \
     apt-get install git-lfs && \
-    cd /app && \
-    git clone https://github.com/DUNE/larnd-sim.git && cd larnd-sim && git checkout develop && \
-    pip install --no-cache-dir . && \
-    cd /app && git clone -b main https://github.com/YifanC/larpix_readout_parser.git && \
-    cd larpix_readout_parser && pip install --no-cache-dir . && \
-    export SKIP_CUPY_INSTALL=1 && pip3 install --no-cache-dir . && \
     cd /app && git clone -b main https://github.com/larpix/h5flow.git && \
-    cd h5flow && pip install --no-cache-dir . && \
-    cd /app && git clone -b develop https://github.com/DUNE/ndlar_flow.git && \
-    cd ndlar_flow && pip install --no-cache-dir . && \
-    apt-get autoremove -y && apt-get clean -y
+    cd h5flow && pip install --no-cache-dir . 
+
+# ND sim/flow install
+#RUN  cd /app && \
+#    git clone https://github.com/DUNE/larnd-sim.git && cd larnd-sim && git checkout develop && \
+#    pip install --no-cache-dir . && \
+#    cd /app && git clone -b main https://github.com/YifanC/larpix_readout_parser.git && \
+#    cd larpix_readout_parser && pip install --no-cache-dir . && \
+#    export SKIP_CUPY_INSTALL=1 && pip3 install --no-cache-dir . && \
+#    cd /app && git clone -b develop https://github.com/DUNE/ndlar_flow.git && \
+#    cd ndlar_flow && pip install --no-cache-dir . && \
+#    apt-get autoremove -y && apt-get clean -y

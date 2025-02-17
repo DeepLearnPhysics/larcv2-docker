@@ -1,9 +1,9 @@
-FROM deeplearnphysics/larcv2:ub22.04-cuda12.1-pytorch2.4.0
+FROM deeplearnphysics/larcv2:ub2204-cu124-torch251
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub22.04-cuda12.1-pytorch2.4.0-extra"
+LABEL version="ub2204-cu124-torch251-extra"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -11,9 +11,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV XDG_RUNTIME_DIR=/tmp/$USER
 
 ENV XDG_RUNTIME_DIR=/tmp/$USER
-ENV HDF5_MPI=ON
-ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
-ENV CUDA_HOME=/usr/local/cuda-12.1
+#ENV HDF5_MPI=ON
+#ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
+ENV CUDA_HOME=/usr/local/cuda-12.4
 
 # root
 ENV ROOTSYS=/app/root
@@ -49,7 +49,7 @@ RUN pip install gdown && \
     mkdir -p /app && \
     apt-get -y install cmake libx11-dev libxpm-dev libxft-dev libxext-dev libssl-dev
 
-RUN gdown https://drive.google.com/uc?id=1psl5YdslOhE1zFnQZBdd4nKCfrsY-7ZD -O root.tar.gz && \
+RUN gdown https://drive.google.com/uc?id=1AEoCMwXvFpo0_5slh_jTgjP4rqZJRxye -O root.tar.gz && \
     tar -xzf root.tar.gz && \
     rm root.tar.gz && \
     mv root /app/root && \

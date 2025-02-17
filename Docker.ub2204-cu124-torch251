@@ -1,17 +1,17 @@
 #FROM nvcr.io/nvidia/pytorch:22.04-py3
-FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 
 LABEL maintainer="drinkingkazu"
 LABEL contact="contact@deeplearnphysics.org"
 LABEL type="gpu"
-LABEL version="ub22.04-cuda12.1-pytorch2.4.0"
+LABEL version="ub2204-cu124-torch251"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV XDG_RUNTIME_DIR=/tmp/$USER
-ENV HDF5_MPI=ON
-ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
-ENV CUDA_HOME=/usr/local/cuda-12.1
+#ENV HDF5_MPI=ON
+#ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
+ENV CUDA_HOME=/usr/local/cuda-12.4
 
 #
 # nvcomp obtained by
@@ -41,21 +41,18 @@ RUN apt-get -y update && \
 RUN pip3 --no-cache-dir install -U pip && \
     pip3 --no-cache-dir install --upgrade setuptools && \
     pip3 --no-cache-dir install cupy-cuda12x && \
-    pip3 --no-cache-dir install --no-binary=mpi4py mpi4py==3.1.6 && \
-    HDF5_MPI="ON" CC=mpicc HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi pip3 --no-cache-dir install --no-binary=h5py h5py && \
     pip3 --no-cache-dir install jedi==0.17.2 && \
     pip3 --no-cache-dir install numpy wheel zmq six pygments pyyaml pyyaml-include==1.4.1 cython && \
-    pip3 --no-cache-dir install pytest pytest-mpi numba pyzmq pyserial && \
+    pip3 --no-cache-dir install pytest pytest-mpi numba pyzmq pyserial h5py && \
     pip3 --no-cache-dir install gputil psutil humanize tqdm fire sphinx-rtd-theme && \
     pip3 --no-cache-dir install scipy tables pandas pandas-profiling scikit-image scikit-learn scikit-build &&\
     pip3 --no-cache-dir install Pillow opencv-python && \
     pip3 --no-cache-dir install matplotlib seaborn cufflinks && \
-    pip3 --no-cache-dir install torch torchvision torchaudio && \
+    pip3 --no-cache-dir install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 && \
     pip3 --no-cache-dir install "typeguard<5,>=4.1.2" && \
     pip3 --no-cache-dir install tensorboard && \
     pip3 --no-cache-dir install botorch scikit-learn numdifftools pyro-ppl && \
-    pip3 --no-cache-dir install torch_geometric && \
-    pip3 --no-cache-dir install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.0+cu121.html && \
+    pip3 --no-cache-dir install -U "jax[cuda12]" && \
     pip3 --no-cache-dir install jupyter notebook ipywidgets jupyterthemes widgetsnbextension && \
     pip3 --no-cache-dir install plotly plotly_express && \
     pip3 --no-cache-dir install ipython ipykernel && \
@@ -70,10 +67,24 @@ RUN pip3 --no-cache-dir install -U pip && \
     rm -rf /app/tmp && \
     apt-get autoremove -y && apt-get clean -y 
 
+#RUN pip3 --no-cache-dir install --no-binary=mpi4py mpi4py==3.1.6 && \
+#    HDF5_MPI="ON" CC=mpicc HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi pip3 --no-cache-dir install --no-binary=h5py h5py
+
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     cd /app && git clone https://github.com/hakimel/reveal.js.git && cd reveal.js && npm install && \
     apt-get autoremove -y && apt-get clean -y 
-    
-RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ ME-cuda12.1-pytorch2.4.0-sm80
+
+
+#RUN pip3 --no-cache-dir install torch_geometric && \
+#    pip3 --no-cache-dir install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.4.1+cu124.html
+
+RUN pip3 --no-cache-dir install torch_geometric && \
+    pip3 --no-cache-dir install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cu124.html
+
+RUN pip3 --no-cache-dir install gdown && \
+    gdown https://drive.google.com/uc?id=1kZ7VvTMajTZW33qks7IPjBq0LUiacOtr -O shared_ptr_base.h && \
+    mv shared_ptr_base.h /usr/include/c++/11/bits/shared_ptr_base.h
+
+RUN pip3 --no-cache-dir install -i https://test.pypi.org/simple/ MinkowskiEngine_DLP_cu124
 
